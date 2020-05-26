@@ -1,0 +1,26 @@
+<!doctype html>
+<title>Hello Students!</title>
+<body style="background: {{ color }}; font-family: Arial, Helvetica, sans-serif;"></body>
+<div style="color: #e4e4e4;
+    text-align:  center;
+    height: 90px;
+    vertical-align:  middle;">
+
+    <h1>Hello Students!</h1>
+    <p>Welcome to the Kubernetes Advanced Bootcamp!</p>
+
+  {% if debug %}
+    <h2> {{ debug }} </h2>
+  {% endif %}
+
+  {% if name %}
+    <p> From {{ name }}!</p>
+  {% endif %}
+
+  {% if contents %}
+  <textarea rows="10" cols="50">
+    {{ contents }}
+  </textarea>
+  {% endif %}
+
+</div>
