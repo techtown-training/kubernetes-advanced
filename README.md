@@ -1,4 +1,4 @@
-# Kubernetes Advanced Boot Camp
+# Advanced Kubernetes Boot Camp
 Kubernetes’s learning curve can be overwhelming due to the ecosystem growing more and more each day. There are many advanced concepts, tools, and practices one must master if they want to take full advantage of all that Kubernetes has to offer. Your initial introduction to pods, deployments, and services was just the beginning of an ongoing learning journey.
 
 In this advanced Kubernetes training course, an experienced technologist will guide you through critical topics around Kubernetes that will help you build enterprise applications. Moreover, you will explore the vast ecosystem from the Cloud Native Computing Foundation (CNCF) for tools and projects available in Kubernetes. Some of the projects you will explore and use are Helm, Telepresence, Istio, Octant, and Vitess. This course is a 50/50 split between theory and practical exercises. In order to fully participate, you must have a basic understanding of Kubernetes and feel comfortable using the command line in a Linux environment.
