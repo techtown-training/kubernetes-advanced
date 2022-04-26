@@ -44,5 +44,5 @@ spec:
 
 - Create the pod based on the previous YAML (kubectl apply -f).
 - Is it working? If not, fix the problem. Do you need to delete the pod?
-- How many nodes are in the `webapp` pod?
+- How many containers are in the `webapp` pod?
 - Create a new pod with a container using the image `redis`.
