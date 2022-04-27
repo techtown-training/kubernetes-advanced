@@ -13,8 +13,50 @@ metrics-server   1/1     1            1           49s
 
 Let's create a simple web app with the following command. Notice you're specifying the `requests` and `limits` for pods:
 
+_web-app.yaml_
 ```
-kubectl run httpd --image=httpd --requests=cpu=100m --limits=cpu=200m --expose --port=80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: httpd
+  template:
+    metadata:
+      labels:
+        app: httpd
+    spec:
+      containers:
+      - name: httpd
+        image: httpd:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+          limits:
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpd
+spec:
+  selector:
+    app: httpd
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+...
+```
+
+```
+kubectl apply -f web-app.yaml
 ```
 
 Configure HPA for the web app you created:
