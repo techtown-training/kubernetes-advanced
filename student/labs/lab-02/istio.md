@@ -2,11 +2,11 @@
 
 ## Installing Istio
 
-Let's start by installing Istio 1.5.2 and deploying the sample application:
+Let's start by installing Istio 1.13.3 and deploying the sample application:
 
 ```
 curl -L https://istio.io/downloadIstio | sh -
-cd istio-1.5.2
+cd istio-1.13.3
 export PATH=$PWD/bin:$PATH
 istioctl manifest apply --set profile=demo
 kubectl create namespace servicemesh
@@ -15,6 +15,7 @@ kubectl label namespace servicemesh istio-injection=enabled
 
 Deploy the sample application using the following YAML manifest:
 
+_istiodemo.yaml_
 ```
 apiVersion: v1
 kind: Service
@@ -320,8 +321,9 @@ kubectl exec -n servicemesh -it $(kubectl get pod -n servicemesh -l app=ratings 
 
 Make the app accessible by creating an ingress gateway using the following YAML manifest:
 
+_istioingress.yaml_
 ```
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: bookinfo-gateway
@@ -336,7 +338,7 @@ spec:
     hosts:
     - "*"
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: bookinfo
@@ -371,7 +373,7 @@ kubectl apply -f istioingress.yaml -n servicemesh
 kubectl get gateway -n servicemesh
 kubectl get svc istio-ingressgateway -n istio-system
 export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
-export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
 echo http://$GATEWAY_URL/productpage
 ```
@@ -380,7 +382,7 @@ Let's expose Kiali to access it via the internet:
 
 ```
 cat <<EOF | kubectl apply -f -
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: kiali-gateway
@@ -396,7 +398,7 @@ spec:
     hosts:
     - "*"
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: kiali-vs
@@ -415,7 +417,7 @@ spec:
         port:
           number: 20001
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: kiali
@@ -448,6 +450,7 @@ kubectl label namespace portal istio-injection=enabled
 
 Use the following YAML manifest to deploy a three services app:
 
+_portalapp.yaml_
 ```
 apiVersion: apps/v1
 kind: Deployment
@@ -692,7 +695,7 @@ Use the following commands to confirm that everything is working when pods are "
 
 ```
 $ kubectl get pods -n portal
-$ kubectl run --generator=run-pod/v1 -n portal test-$RANDOM --rm -i -t --image=alpine -- sh
+$ kubectl run --rm -it --image=alpine -- sh
 / # wget -qO- --timeout=2 http://customer.portal.svc.cluster.local:8080
 ```
 
@@ -700,6 +703,7 @@ $ kubectl run --generator=run-pod/v1 -n portal test-$RANDOM --rm -i -t --image=a
 
 Let's deploy a v2 of the recommendation service. Use the following YAML manifest:
 
+_recommendationv2.yaml_
 ```
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -767,7 +771,7 @@ kubectl get pods -n portal
 Open a new tab, and run the following command to test the traffic. Don't close the tab, as you'll continue using it:
 
 ```
-$ kubectl run --generator=run-pod/v1 -n portal test-$RANDOM --rm -i -t --image=alpine -- sh
+$ kubectl run --rm -it --image=alpine -- sh
 / # cat <<EOF > test.sh
 #!/bin/sh 
 while true
@@ -780,8 +784,9 @@ EOF
 
 Create the default `DestinationRule` and `VirtualService` to redirect all traffic to v1. Use the following YAML manifest:
 
+_istiotraffic.yaml_
 ```
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: recommendation
@@ -795,7 +800,7 @@ spec:
       version: v2
     name: version-v2
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: recommendation
@@ -837,7 +842,7 @@ Enable the telemetry endpoint to be accessed over the internet running the follo
 
 ```
 cat <<EOF | kubectl apply -f -
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: tracing-gateway
@@ -853,7 +858,7 @@ spec:
     hosts:
     - "*"
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: tracing-vs
@@ -872,7 +877,7 @@ spec:
         port:
           number: 80
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: tracing
@@ -898,7 +903,7 @@ You also have access to Grafana. Run the following command to enable public acce
 
 ```
 cat <<EOF | kubectl apply -f -
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: grafana-gateway
@@ -914,7 +919,7 @@ spec:
     hosts:
     - "*"
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: grafana-vs
@@ -933,7 +938,7 @@ spec:
         port:
           number: 3000
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: grafana
