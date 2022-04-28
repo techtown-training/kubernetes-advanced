@@ -29,7 +29,7 @@ Let's install a MySQL database with custom values:
 ```
 helm repo update
 helm show values bitnami/mysql
-echo '{"image":{"tag":"8.0.27"}}' > config.yaml
+echo '{"image":{"tag":"8.0.27-debian-10-r1"}}' > config.yaml
 helm install demo-database -f config.yaml bitnami/mysql
 helm ls
 kubectl get pods
@@ -40,7 +40,7 @@ You should be able to connect to the database by using the following commands:
 ```
 MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace default demo-database-mysql -o jsonpath="{.data.mysql-root-password}" | base64 --decode)
 echo -e "  Primary: demo-database-mysql.default.svc.cluster.local:3306\n  Username: root\n  Password: $MYSQL_ROOT_PASSWORD"
-kubectl run demo-database-mysql-client --rm --tty -i --restart='Never' --image  docker.io/bitnami/mysql:8.0.27 --namespace default --env MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --command -- bash
+kubectl run demo-database-mysql-client --rm --tty -i --restart='Never' --image  docker.io/bitnami/mysql:8.0.27-debian-10-r1 --namespace default --env MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --command -- bash
 ```
 
 Now in the container lets run the mysql client:
@@ -70,7 +70,7 @@ Again verify the version of MySQL
 
 ```
 MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace default demo-database-mysql -o jsonpath="{.data.mysql-root-password}" | base64 --decode)
-kubectl run demo-database-mysql-client --rm --tty -i --restart='Never' --image  docker.io/bitnami/mysql:8.0.29 --namespace default --env MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --command -- bash
+kubectl run demo-database-mysql-client --rm --tty -i --restart='Never' --image  docker.io/bitnami/mysql:8.0.29-debian-10-r1 --namespace default --env MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --command -- bash
 ```
 
 Start the mysql client:
